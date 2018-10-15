@@ -20,19 +20,22 @@ class UniformMesh(object):
     The list of nodes that comprise the canitlever domain.
     """
     
-    def __init__(self, cantilever):
+    def __init__(self, domain):
         """
-        :param cantilever: An object describing a the topology of the 
-            cantilever. This requires a binary matrix called `topology` to 
-            describe which element in the mesh exists.
+        Parameters
+        ----------
+        domain : ndarray
+        An object describing a the topology of the cantilever. This requires a 
+        binary matrix called `topology` to describe which element in the mesh 
+        exists.
         """
         
         # Create all elements and nodes on the rectangular domain.
-        nelx, nely = cantilever.topology.shape
+        nelx, nely = domain.shape
         self._nodes_2D = [[Node(i, j) for j in range(nely + 1)]
                           for i in range(nelx + 1)]
-        self._elements_2D = [[Element(i, j, cantilever, self._nodes_2D) 
-                             for j in range(nely)] for i in range(nelx)]
+        self._elements_2D = [[Element(i, j, domain, self._nodes_2D) 
+                            for j in range(nely)] for i in range(nelx)]
 
         # Create list of valid elements and nodes.
         gen_elements = (e for row in self._elements_2D for e in row)
@@ -47,9 +50,6 @@ class UniformMesh(object):
             
         for i, n in enumerate(self.nodes):
             n.index = i
-        
-        self.a = cantilever.a
-        self.b = cantilever.b
 
 
     @property
@@ -60,18 +60,12 @@ class UniformMesh(object):
     @property
     def n_elem(self):
         return len(self.elements)
-        
-        
-    def get_densities(self):
-        
-        return np.array([e.density for e in self.elements])
     
     
-    def set_densities(self, densities):
+    def domain2array(self, domain):
         
-        for x, e in zip(densities, self.elements):
-            e.density = x
-    
+        return  np.array([domain[e.i, e.j] for e in self.elements])
+        
     
     def to_console(self):
         
@@ -99,7 +93,7 @@ class Element(object):
     self.void  : False if a member of the domain, else True.
     self.index : The index in the list of non-void elements.
     """
-    def __init__(self, i, j, cantilever, nodes_2D):
+    def __init__(self, i, j, domain, nodes_2D):
         
         nsw = nodes_2D[i][j]
         nse = nodes_2D[i + 1][j]
@@ -110,9 +104,8 @@ class Element(object):
         self.i = i
         self.j = j
         self.nodes = (nsw, nse, nne, nnw)
-        self.void = False if cantilever.topology[i][j] == 1 else True
+        self.void = False if domain[i][j] == 1 else True
         self.index = 0 # set later if not void
-        #self.density = cantilever.densities[i][j]
         
         # Set node.void to False if element is non-void.
         if self.void is False:

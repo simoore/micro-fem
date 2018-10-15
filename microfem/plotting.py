@@ -1,8 +1,11 @@
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.tri as mtri
+import matplotlib.patches as patches
+import scipy.interpolate as interpolate
 
 
 def plot_topology(cantilever, filename=None):
@@ -38,7 +41,7 @@ def plot_topology(cantilever, filename=None):
         
         
 def plot_mode(fem, v):
-    
+        
     # Create list of points at each node and the deflection DOF.
     n_pts = len(fem.dof.dof_nodes)
     pts = np.zeros((n_pts, 3))
@@ -64,3 +67,43 @@ def plot_mode(fem, v):
     ax.view_init(30, 45)
     plt.show()
     
+    
+    
+def plot_poisson_solution(fem, uall, show=None):
+    
+    assert len(fem.dof.dof_nodes) == uall.shape[0]
+
+    a = fem.poisson_domain.a
+    b = fem.poisson_domain.b
+    nelx, nely = fem.poisson_domain.domain.shape
+    
+    x = np.arange(nelx + 1) * 2 * a
+    y = np.arange(nely + 1) * 2 * b
+    mx, my = np.meshgrid(x, y, indexing='ij')
+    mask = np.ones(mx.shape, dtype=bool)
+    zdata = np.zeros(mx.shape)
+    for n in fem.dof.dof_nodes:
+        mask[n.node.i, n.node.j] = False
+        zdata[n.node.i, n.node.j] = uall[n.dof]
+    z_mask = np.ma.array(zdata, mask=mask)
+
+    fig, ax = plt.subplots()
+    
+    # Add information about the poisson.
+    extent = [0, 2*nelx*a, 0, 2*nely*b]
+    if show == 'domain':
+        img = fem.poisson_domain.domain.T
+    elif show == 'conductivity':
+        img = fem.poisson_domain.conductivity.T
+    elif show == 'source':
+        img = fem.poisson_domain.source.T
+    ax.imshow(img, extent=extent, origin='lower', cmap=cm.Pastel1)  
+    
+    # Add the temperature distribution.
+    cs = ax.contour(mx, my, z_mask, 10, colors='k', interpolation='bilinear')
+    ax.clabel(cs, inline=1, fontsize=10)
+    ax.set_title('Temperature Distribution')
+    ax.set_xlabel('Width (um)')
+    ax.set_ylabel('Length(um)')
+    
+    plt.show()

@@ -7,9 +7,9 @@ class PoissonModel(object):
         Parameters
         ----------
         a : float 
-            Half the width of an element in the x-direction.
+            Half the width of an element in the x-direction. Units in um.
         b : float
-            Half the width of an element in the y-direction.
+            Half the width of an element in the y-direction. Units in um.
         """
         a = a * 1e-6
         b = b * 1e-6
@@ -17,7 +17,7 @@ class PoissonModel(object):
         self._ke = np.zeros((4, 4))
         self._fe = np.zeros((4, 1))
         for p in points:
-            n, dndxi, dndeta = self._shapes(p)
+            n, dndxi, dndeta = self.shapes(p)
             self._ke += a*b * (dndxi.T @ dndxi / a*a + dndeta.T @ dndeta / b*b)
             self._fe += a*b * n.T
             
@@ -33,7 +33,7 @@ class PoissonModel(object):
         
           
     @staticmethod
-    def _shapes(point):
+    def shapes(point):
         """
         Parameters
         ----------
