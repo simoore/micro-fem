@@ -26,7 +26,7 @@ class LaminateMaterial(object):
         self._cc = piezo_layer.epsilon / piezo_layer.h
 
         # Laminate mass properties.
-        self._cm = self._generate_cm(layers)
+        self._cm0, self._cm1, self._cm2 = self._generate_cm(layers)
 
         # Set elastic matrices.
         self._cs1, self._cs2, self._cs3 = self._generate_cs(layers)
@@ -51,25 +51,12 @@ class LaminateMaterial(object):
             p0 += l.rho * (l.zu - l.zl)
             p1 += l.rho * (l.zu ** 2 - l.zl ** 2) / 2
             p2 += l.rho * (l.zu ** 3 - l.zl ** 3) / 3
-        cm0 = np.zeros((5, 5))
-        cm0[0, 0] = 1
-        cm0[1, 1] = 1
-        cm0[2, 2] = 1
-        cm1 = np.zeros((5, 5))
-        cm1[0, 4] = 1
-        cm1[4, 0] = 1
-        cm1[1, 3] = -1
-        cm1[3, 1] = -1
-        cm2 = np.zeros((5, 5))
-        cm2[3, 3] = 1
-        cm2[4, 4] = 1
-        cm = p0 * cm0 + p1 * cm1 + p2 * cm2
-        return cm
-
+        return p0, p1, p2
+    
 
     def get_fem_parameters(self):
         return (self._cs1, self._cs2, self._cs3, self._ce1, self._ce2,
-                self._cc, self._cm)
+                self._cc, self._cm0, self._cm1, self._cm2)
 
 
 class LaminateLayer(object):
@@ -104,7 +91,7 @@ class LaminateLayer(object):
         Parameters
         ----------
         e_piezo : float
-        This is the strain piezoelectric coefficient d=d_{31}=d_{32} in C/N.
+        This is the strain piezoelectric coefficient e=e_{31}=e_{32} in C/m^2.
         """
         
         # Layer coordinates, thickness, and density.
@@ -115,7 +102,7 @@ class LaminateLayer(object):
 
         # Elastic, piezoelectricv and capacitance coefficents.
         self.c = self._generate_elastic_matrix(elastic, nu)
-        self.e = self._generate_piezoelectric_matrix(e_piezo, self.c)
+        self.e = self._generate_piezoelectric_matrix(e_piezo)
         self.epsilon = epsilon
         
     
@@ -136,9 +123,8 @@ class LaminateLayer(object):
    
     
     @staticmethod
-    def _generate_piezoelectric_matrix(e_piezo, c):
-        d = np.array([[e_piezo, e_piezo, 0, 0, 0]])
-        e = d @ c
+    def _generate_piezoelectric_matrix(e_piezo):
+        e = np.array([[e_piezo, e_piezo, 0, 0, 0]])
         return e
     
 
@@ -188,8 +174,7 @@ class PiezoMumpsMaterial(LaminateMaterial):
         aln_e = 300e9
         aln_nu = 0.36
         aln_perm = perm_free * 10.2
-        #aln_piezo = 2e-12
-        aln_piezo = 1
+        aln_piezo = 0.58 # This is e_31=e_32.
         aln = LaminateLayer(aln_h, aln_rho, aln_e, aln_nu, aln_perm, aln_piezo)
 
         al_h = 1e-6
@@ -203,7 +188,7 @@ class PiezoMumpsMaterial(LaminateMaterial):
         super().__init__(layers, aln)
         
         
-class SoiMumpsMaterial(LaminateMaterial):
+class SoiMumpsModel(LaminateMaterial):
     
     def __init__(self):
         perm_free = 8.85418782e-12

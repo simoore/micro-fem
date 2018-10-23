@@ -3,7 +3,7 @@ import scipy.sparse as sparse
 import scipy.sparse.linalg as linalg
 
 from .mesh import UniformMesh
-from .laminate_model_v2 import LaminateModel
+from .laminate_model import LaminateModel
 from .laminate_dof import LaminateDOF
 
 

@@ -1,4 +1,4 @@
-from .laminate_materials_v2 import PiezoMumpsMaterial, SoiMumpsLaminateModel
+from .laminate_materials import PiezoMumpsMaterial
 from .laminate_fem import LaminateFEM
 from .plate_materials import SoiMumpsMaterial, PlateMaterial
 from .plate_fem import PlateFEM
