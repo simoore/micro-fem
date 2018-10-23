@@ -3,19 +3,12 @@ import scipy.sparse as sparse
 import scipy.sparse.linalg as linalg
 
 from .mesh import UniformMesh
-from .laminate_model import LaminateModel
+from .laminate_model_v2 import LaminateModel
 from .laminate_dof import LaminateDOF
 
 
 class LaminateFEM(object):
-    """
-    Public Attributes
-    -----------------
-    :self.cantilever:
-    :self.mesh: The collections of elements and their associated nodes that 
-                define the domain over which the finite element analysis is 
-                applied.
-    """
+
     def __init__(self, material, cantilever):
         
         self.cantilever = cantilever
@@ -24,7 +17,7 @@ class LaminateFEM(object):
         self.model = LaminateModel(material, cantilever.a, cantilever.b)
         self.a = cantilever.a
         self.b = cantilever.b
-        self._assemble()
+        self.assemble()
         
     
     def get_mass_matrix(self, free=False):
@@ -67,7 +60,7 @@ class LaminateFEM(object):
         return w, v, vall
         
     
-    def _assemble(self):
+    def assemble(self):
         """The mass, stiffness, piezoelectric, and capacitance matricies are 
         assembled in this function.
         """

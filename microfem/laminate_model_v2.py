@@ -23,7 +23,7 @@ class LaminateModel(object):
         
         elements = self._generate_element_matrices()
         self._muue, self._kuue, self._kuve, self._kvve = elements
-        print(self._muue)
+        
     
     def get_mass_element(self):
         return self._muue
@@ -43,7 +43,7 @@ class LaminateModel(object):
         
     def _generate_element_matrices(self):  
         
-        cs1, cs2, cs3, ce1, ce2, cc, cm = self._material.get_fem_parameters()
+        cs1, cs2, cs3, ce1, ce2, cc, cm0, cm1, cm2 = self._material.get_fem_parameters()
                 
         muue = np.zeros((20, 20))
         kuue = np.zeros((20, 20))
@@ -53,8 +53,9 @@ class LaminateModel(object):
         be = self._dofs_to_electric_field_matrix()
         for p in self._points:
             bs1, bs2, bs3 = self._dofs_to_strain_matrix(p)
-            nu = self._dofs_to_displacement_matrix(p)
-            muue += self._jacobian * nu.T @ cm @ nu
+            bu1, bu2 = self._dofs_to_displacement_matrix(p)
+            muue += self._jacobian * (cm0 * bu1.T @ bu1 + cm1 * bu2.T @ bu1)
+            muue += self._jacobian * (cm1 * bu1.T @ bu2 + cm2 * bu2.T @ bu2)
             kuue += self._jacobian * (bs1.T @ cs1 @ bs1 + bs2.T @ cs2 @ bs1)
             kuue += self._jacobian * (bs1.T @ cs2 @ bs2 + bs2.T @ cs3 @ bs2)
             kuve += self._jacobian * ((bs1.T + bs3.T) @ ce1 * be)
@@ -101,12 +102,17 @@ class LaminateModel(object):
     
     
     def _dofs_to_displacement_matrix(self, point):
-        nu = [None for _ in range(4)]
+        bu1 = [None for _ in range(4)]
+        bu2 = [None for _ in range(4)]
         for i in range(4):
             n, _, _ = self._shapes(point, i)
-            nu[i] = np.diag((n, n, n, n, n))
-        nu = np.hstack(nu)
-        return nu
+            bu1[i] = np.hstack((np.diag((n, n, n)), 
+                                np.zeros((3, 2))))
+            bu2[i] = np.hstack((np.zeros((3, 3)), 
+                                np.array([[0, n], [-n, 0], [0, 0]])))
+        bu1 = np.hstack(bu1)
+        bu2 = np.hstack(bu2)
+        return bu1, bu2
     
     
     def _dofs_to_electric_field_matrix(self):

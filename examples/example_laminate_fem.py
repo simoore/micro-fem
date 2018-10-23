@@ -38,24 +38,24 @@ fem = microfem.LaminateFEM(material, cantilever)
 # resonance frequencies and mode shapes of the cantilever. These can then be
 # plotted.
 n_modes = 3
-ws,_, vall = fem.modal_analysis(n_modes=n_modes)
+ws, _, vall = fem.modal_analysis(n_modes=n_modes)
 
 
 # Using the results of the modal analysis, the frequency, stiffness, 
 # tip displacement, and mode type (flexural, torsional), can be determined.
 coords = (cantilever.xtip, cantilever.ytip)
-opr = microfem.PlateDisplacement(fem, coords).get_operator()
-mode_ident = microfem.ModeIdentification(fem, cantilever)
+opr = microfem.LaminateDisplacement(fem, coords).get_operator()
+mode_ident = microfem.ModeIdentification(fem, cantilever, type_='laminate')
 
 
 freq = np.sqrt(ws) / (2*np.pi)
 kuu = fem.get_stiffness_matrix(free=False)
-kuve = fem.get_piezoelectric_matrix(free=False)
+kuv = fem.get_piezoelectric_matrix(free=False)
 phis = [vall[:, [i]] for i in range(n_modes)]
 wtips = [opr @ p for p in phis]
 kfunc = lambda p, w: np.asscalar(p.T @ kuu @ p / w ** 2)
 ks = [kfunc(p, w) for p, w in zip(phis, wtips)]
-charges = [kuve.T @ p / w for p, w in zip(phis, wtips)]
+charges = [kuv.T @ p / w for p, w in zip(phis, wtips)]
 types = [mode_ident.is_mode_flexural(p) for p in phis]
 
             

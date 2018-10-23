@@ -47,7 +47,7 @@ ws, _, vall = fem.modal_analysis(n_modes=n_modes)
 # tip displacement, and mode type (flexural, torsional), can be determined.
 coords = (cantilever.xtip, cantilever.ytip)
 opr = microfem.PlateDisplacement(fem, coords).get_operator()
-mode_ident = microfem.ModeIdentification(fem, cantilever)
+mode_ident = microfem.ModeIdentification(fem, cantilever, type_='plate')
 
 freq = np.sqrt(ws) / (2*np.pi)
 kuu = fem.get_stiffness_matrix(free=False)
