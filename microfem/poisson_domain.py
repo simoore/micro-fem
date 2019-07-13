@@ -1,10 +1,4 @@
 class PoissonDomain(object):
-    """Cantilevers are defined by three parameters. (topology) a binary matrix
-    indicating the existence of elements in a rectangular mesh, (a) half the 
-    width of the element, (b) have the length of the element. The first index
-    is the x-coordinate and the second index is the y-coordinate. Elements
-    along the x-axis (y == 0) are on the boundary.
-    """
     
     def __init__(self, domain, conductivity, source, a, b):
         """

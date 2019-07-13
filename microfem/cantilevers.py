@@ -1,15 +1,12 @@
 class Cantilever(object):
-    """Cantilevers are defined by three parameters. (topology) a binary matrix
-    indicating the existence of elements in a rectangular mesh, (a) half the 
-    width of the element, (b) have the length of the element. The first index
-    is the x-coordinate and the second index is the y-coordinate. Elements
-    along the x-axis (y == 0) are on the boundary.
-    """
     
     def __init__(self, topology, a, b, xtip, ytip):
         """
         Parameters
         ----------
+        topology : binary rank 2 ndarray
+            A binary matrix indicating the existence of elements in a 
+            rectangular mesh.
         a : float
             Half the element width in x-direction. The units are um.
         b : float
@@ -24,8 +21,6 @@ class Cantilever(object):
         self.topology = topology
         self.a = a
         self.b = b
-        #self.xtip = 1e6 * (a * nelx)
-        #self.ytip = 1e6 * (2 * nely * b - b)
         self.xtip = xtip
         self.ytip = ytip
 

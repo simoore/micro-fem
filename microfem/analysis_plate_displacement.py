@@ -45,10 +45,6 @@ class PlateDisplacement(object):
     
     
     def _operator_element(self, element):
-        """
-        This operator doesn't check if the tip location is on the fixed 
-        boundary or left-hand side of the domain.
-        """
         
         x0 = element.element.i + 0.5
         y0 = element.element.j + 0.5

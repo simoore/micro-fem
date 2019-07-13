@@ -14,10 +14,10 @@ class UniformMesh(object):
     Public Attributes
     -----------------    
     self.elements : list of objects
-    The list of elements that make up the cantilever domain.
+        The list of elements that make up the cantilever domain.
     
     self.nodes : list of objects
-    The list of nodes that comprise the canitlever domain.
+        The list of nodes that comprise the canitlever domain.
     """
     
     def __init__(self, domain):
@@ -25,9 +25,7 @@ class UniformMesh(object):
         Parameters
         ----------
         domain : ndarray
-        An object describing a the topology of the cantilever. This requires a 
-        binary matrix called `topology` to describe which element in the mesh 
-        exists.
+            An object describing a the topology of the cantilever.
         """
         
         # Create all elements and nodes on the rectangular domain.

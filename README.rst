@@ -1,4 +1,3 @@
-
 Micro FEM
 ---------
 
@@ -15,7 +14,9 @@ analyse many different physical phenomena. All three have a predetermined
 fixed boundary condition along the left edge of the rectangular mesh. 
 
 
-To install the package, change directory to the folder containing  
+To install the package, change directory to the folder containing setup.py and 
+execute: 
+
 
     > pip install .
 

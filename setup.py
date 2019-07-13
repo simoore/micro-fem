@@ -10,7 +10,7 @@ mf_author = 'Steven Moore'
 mf_author_email = 'steven.ian.moore@gmail.com'
 mf_install_requires = ['numpy', 'scipy', 'matplotlib']
 mf_pacakges = ['microfem']
-mf_version = '0.1.0'
+mf_version = '0.1.1'
 
 
 setup(name=mf_name,

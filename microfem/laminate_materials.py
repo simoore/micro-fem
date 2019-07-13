@@ -6,7 +6,7 @@ class LaminateMaterial(object):
     Attributes
     ----------
     self.he : float
-    The thickness of the piezoelectric layer in m.
+        The thickness of the piezoelectric layer in m.
     """
     
     def __init__(self, layers, piezo_layer):
