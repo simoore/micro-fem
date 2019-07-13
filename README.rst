@@ -31,10 +31,8 @@ https://github.com/simoore/cantilever-optimizer
 Extensions
 ----------
 
-- Create an object that encapsulates all the analysis from each type of
-    solver.
-- Avoid rank one numpy arrays and add asserts to check these arrays don't 
-    exist.
+- Create an object that encapsulates all the analysis from each type of solver.
+- Avoid rank one numpy arrays and add asserts to check these arrays don't exist.
 - Add damping models to the plate and laminate FEM.
 - Add the possibility of multiple piezoelectric patches to the laminate FEM.
 - Add static solver with applied voltages and forces to plate and laminate FEM.
