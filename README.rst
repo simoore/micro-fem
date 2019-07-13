@@ -24,6 +24,9 @@ execute:
 Examples of the functionality provided by this library are contained in the
 examples folder.
 
+This library is used by the MEMS topology optimization routines at:
+https://github.com/simoore/cantilever-optimizer
+
 
 Extensions
 ----------
